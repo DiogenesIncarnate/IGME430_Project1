@@ -1,5 +1,5 @@
 // Note this object is purely in memory
-const users = {};
+const characters = {};
 
 // Will respond with a json object string
 const respondJSON = (request, response, status, object) => {
@@ -23,51 +23,53 @@ const respondJSONMeta = (request, response, status) => {
 };
 
 // Will respond with our updated json object of users
-const getUsers = (request, response) => {
+const getCharacters = (request, response) => {
   const responseJSON = {
-    users,
+    characters,
   };
 
   return respondJSON(request, response, 200, responseJSON);
 };
 
 // Will only request head of users data
-const getUsersMeta = (request, response) => respondJSONMeta(request, response, 200);
+const getCharactersMeta = (request, response) => respondJSONMeta(request, response, 200);
 
 // Will update existing user with 201 status
-const updateUser = (request, response) => {
-  const newUser = {
+const updateCharacter = (request, response) => {
+  const newCharacter = {
     createdAt: Date.now(),
   };
 
-  users[newUser.createdAt] = newUser;
+  characters[newCharacter.createdAt] = newCharacter;
 
-  return respondJSON(request, response, 201, newUser);
+  return respondJSON(request, response, 201, newCharacter);
 };
 
 // Will add an entirely new user
 // with 201 status, or 204 if the user already exists,
 // or 400 if parameters are missing
-const addUser = (request, response, body) => {
+const addCharacter = (request, response, body) => {
   const responseJSON = {
-    message: 'Name and age are both required.',
+    message: 'All parameters are required.',
   };
 
-  if (!body.name || !body.age) {
+  let responseCode = 201;
+
+  if (!body.name || !body.race || !body.class) {
+    console.dir(`${body.name}, ${body.race}, ${body.class}`);
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  let responseCode = 201;
+  responseCode = 201;
 
-  if (users[body.name]) {
+  if (characters[body.name]) {
     responseCode = 204;
   } else {
-    users[body.name] = {};
-    users[body.name].name = body.name;
+    characters[body.name] = {};
   }
 
-  users[body.name].age = body.age;
+  characters[body.name] = body;
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully.';
@@ -90,11 +92,33 @@ const notFound = (request, response) => {
 // Response only with head data of unknown enpoint
 const notFoundMeta = (request, response) => respondJSONMeta(request, response, 404);
 
+const rollDice = (n, d) => {
+  let _rolls = [];
+  for(let i = 0; i < n; i++){
+    let roll = Math.floor(Math.random() * d);
+    _rolls.push(roll);
+  }
+
+  const _sum = _rolls.reduce(function(a, b){return a + b;}, 0);
+
+  const results = {rolls: _rolls, sum: _sum};
+
+  return results;
+};
+
+const rollForAbilityScore = () => {
+  const results = rollDice(4, 6);
+  let sum = results.sum;
+  sum -= Math.min(results.rolls);
+  return parseInt(sum);
+};
+
+
 module.exports = {
-  getUsers,
-  getUsersMeta,
-  addUser,
-  updateUser,
+  getCharacters,
+  getCharactersMeta,
+  addCharacter,
+  updateCharacter,
   notFound,
   notFoundMeta,
 };

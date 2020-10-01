@@ -9,7 +9,7 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 // Filter data to the body collection in chunks
 // When the end of the data is reached, add each user through the jsonHandler
 const handlePost = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/addUser') {
+  if (parsedUrl.pathname === '/addCharacter') {
     const body = [];
 
     request.on('error', (err) => {
@@ -26,7 +26,9 @@ const handlePost = (request, response, parsedUrl) => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
 
-      jsonHandler.addUser(request, response, bodyParams);
+      console.log(bodyParams);
+
+      jsonHandler.addCharacter(request, response, bodyParams);
     });
   }
 };
@@ -35,8 +37,8 @@ const handlePost = (request, response, parsedUrl) => {
 const handleGet = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
-  } else if (parsedUrl.pathname === '/getUsers') {
-    jsonHandler.getUsers(request, response);
+  } else if (parsedUrl.pathname === '/getCharacters') {
+    jsonHandler.getCharacters(request, response);
   } else if (parsedUrl.pathname === '/') {
     htmlHandler.getIndex(request, response);
   } else {
@@ -46,8 +48,8 @@ const handleGet = (request, response, parsedUrl) => {
 
 // Retrieve only the minimal head data about our response
 const handleHead = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/getUsers') {
-    jsonHandler.getUsersMeta(request, response);
+  if (parsedUrl.pathname === '/getCharacters') {
+    jsonHandler.getCharactersMeta(request, response);
   } else {
     jsonHandler.notFoundMeta(request, response);
   }

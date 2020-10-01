@@ -8,6 +8,7 @@
     <script type="text/babel">
       // Take any JSON responses and parse them into legible HTML
       const parseJSON = (xhr, content) => {
+        
         try{
           const obj = JSON.parse(xhr.response);
           if(obj) console.dir(obj);
@@ -15,41 +16,47 @@
         if(obj.message){
           content.innerHTML += `<p>${obj.message}</p>`;
         }
-        if(obj.users){
+        if(obj.characters){
           content.innerHTML += `<p>`;
-          content.innerHTML += `<h3>Users:<h3><hr>`;
-          for(const user in obj.users){
-            content.innerHTML += `Name: <i>${obj.users[user].name}</i>, Age: <i>${obj.users[user].age}</i><br>`;
+          content.innerHTML += `<h3>Characters:<h3><hr>`;
+          for(const ch in obj.characters){
+            //content.innerHTML += `Name: <i>${obj.characters[ch].name}</i>, Age: <i>${obj.characters[ch].age}</i><br>`;
+            for(const [key, value] of Object.entries(obj.characters[ch])){
+              content.innerHTML += `${key}: <i>${value}</i><b>|</b>`;
+            }
+            content.innerHTML += "<br>";
           }
           content.innerHTML += `</p>`;
         }
         } catch (e) {
 
         }
+        
       };
 
       // Set the html response title based on the status code, then parse any JSON
       const handleResponse = (xhr) => {
-        const content = document.querySelector('#content');
+        const content = document.querySelector("#content");
 
-        switch(xhr.status){
+        switch (xhr.status) {
           case 200:
-            content.innerHTML = '<h2>Success!</h2>';
+            content.innerHTML = "<h2>Success!</h2>";
             break;
           case 201:
-            content.innerHTML = '<h2>Created!</h2>';
+            content.innerHTML = "<h2>Created!</h2>";
             break;
           case 204:
-            content.innerHTML = '<h2>Updated (No Content)!</h2>';
+            content.innerHTML = "<h2>Updated (No Content)!</h2>";
             break;
           case 400:
-            content.innerHTML = '<h2>Bad Request :(</h2>';
+            content.innerHTML = "<h2>Bad Request :(</h2>";
             break;
           case 404:
-            content.innerHTML = '<h2>Resource Not Found :(</h2>';
+            content.innerHTML = "<h2>Resource Not Found :(</h2>";
             break;
           default:
-            content.innerHTML = '<p>Error code not implemented by client :(</p>';
+            content.innerHTML =
+              "<p>Error code not implemented by client :(</p>";
             break;
         }
 
@@ -57,14 +64,13 @@
       };
 
       // Sends request to update our user object data
-      const requestUpdate = (e, userForm) => {
-        const url = userForm.querySelector('#urlField').value;
-        const method = userForm.querySelector('#methodSelect').value;
+      const requestUpdate = (e, chracterForm) => {
+        const method = chracterForm.querySelector("#methodSelect").value;
 
         const xhr = new XMLHttpRequest();
-        xhr.open(method, url);
+        xhr.open(method, '/getCharacters');
 
-        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader("Accept", "application/json");
 
         xhr.onload = () => handleResponse(xhr);
 
@@ -76,24 +82,33 @@
 
       // Will send a request to post new data to the server
       // to ultimately add to our users object
-      const sendPost = (e, nameForm) => {
+      const sendPost = (e, dataForm) => {
         e.preventDefault();
 
-        const nameAction = nameForm.getAttribute('action');
-        const nameMethod = nameForm.getAttribute('method');
+        const dataAction = dataForm.getAttribute("action");
+        const dataMethod = dataForm.getAttribute("method");
 
-        const nameField = nameForm.querySelector('#nameField');
-        const ageField = nameForm.querySelector('#ageField');
+        const nameField = dataForm.querySelector("#nameField");
+        const raceField = dataForm.querySelector("#raceField");
+        const classField = dataForm.querySelector("#classField");
+
+        const abilitiesDiv = dataForm.querySelector("#abilitiesDiv");
+        const abilityFields = abilitiesDiv.querySelectorAll("input");
 
         const xhr = new XMLHttpRequest();
-        xhr.open(nameMethod, nameAction);
+        xhr.open(dataMethod, dataAction);
 
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader("Accept", "application/json");
+        xhr.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded"
+        );
 
         xhr.onload = () => handleResponse(xhr);
 
-        const formData = `name=${nameField.value}&age=${ageField.value}`;
+        let formData = `name=${nameField.value}&race=${raceField.value}&class=${classField.value}`;
+        abilityFields.forEach((e) => (formData += `&${e.id}=${e.value}`));
+
         xhr.send(formData);
 
         return false;
@@ -101,14 +116,14 @@
 
       // Initialize any form events
       const init = () => {
-        const userForm = document.querySelector('#userForm');
-        const nameForm = document.querySelector('#nameForm');
+        const dataForm = document.querySelector("#dataForm");
+        const characterForm = document.querySelector("#characterForm");
 
-        const addUser = (e) => sendPost(e, nameForm);
-        const getUsers = (e) => requestUpdate(e, userForm);
+        const addCharacter = (e) => sendPost(e, dataForm);
+        const getCharacters = (e) => requestUpdate(e, characterForm);
 
-        userForm.addEventListener('submit', getUsers);
-        nameForm.addEventListener('submit', addUser);
+        dataForm.addEventListener("submit", addCharacter);
+        characterForm.addEventListener("submit", getCharacters);
       };
 
       window.onload = init;
@@ -116,31 +131,101 @@
   </head>
   <body>
     <section id="top">
-      <h3>POST Status Code Tests</h3>
-      <form id="nameForm" action="/addUser" method="post">
+      <h3>D&D Character Creator</h3>
+      <form id="dataForm" action="/addCharacter" method="post">
         <label for="name">Name: </label>
         <input id="nameField" type="text" name="name" />
-        <label for="age">Age: </label>
-        <input
-          id="ageField"
-          type="number"
-          name="age"
-          min="0"
-          max="100"
-          step="1"
-        />
-        <input type="submit" value="Add User" />
-      </form>
-      <form id="userForm" action="/getUsers" method="get">
-        <select id="urlField">
-          <option value="/getUsers">/getUsers</option>
-          <option value="/notReal">/notReal</option>
+        <label for="race">Race: </label>
+        <select id="raceField">
+          <option value="Dwarf">Dwarf</option>
+          <option value="Elf">Elf</option>
+          <option value="Halfling">Halfling</option>
+          <option value="Human">Human</option>
+          <option value="Dragonborn">Dragonborn</option>
+          <option value="Gnome">Gnome</option>
+          <option value="Half-Elf">Half-Elf</option>
+          <option value="Half-Orc">Half-Orc</option>
+          <option value="Tiefling">Tiefling</option>
         </select>
+        <label for="class">Class: </label>
+        <select id="classField">
+          <option value="Barbarian">Barbarian</option>
+          <option value="Bard">Bard</option>
+          <option value="Cleric">Cleric</option>
+          <option value="Druid">Druid</option>
+          <option value="Fighter">Fighter</option>
+          <option value="Monk">Monk</option>
+          <option value="Paladin">Paladin</option>
+          <option value="Ranger">Ranger</option>
+          <option value="Rogue">Rogue</option>
+          <option value="Sorcerer">Sorcerer</option>
+          <option value="Warlock">Warlock</option>
+          <option value="Wizard">Wizard</option>
+        </select>
+        <div id="abilitiesDiv">
+          <label for="Strength">Strength: </label>
+          <input
+            id="strField"
+            type="number"
+            name="Strength"
+            min="1"
+            max="20"
+            step="1"
+          />
+          <label for="Dexterity">Dexterity: </label>
+          <input
+            id="dexField"
+            type="number"
+            name="Dexterity"
+            min="1"
+            max="20"
+            step="1"
+          />
+          <label for="Constitution">Constitution: </label>
+          <input
+            id="conField"
+            type="number"
+            name="Consitution"
+            min="1"
+            max="20"
+            step="1"
+          />
+          <label for="Intelligence">Intelligence: </label>
+          <input
+            id="intField"
+            type="number"
+            name="Intelligence"
+            min="1"
+            max="20"
+            step="1"
+          />
+          <label for="Wisdom">Wisdom: </label>
+          <input
+            id="wisField"
+            type="number"
+            name="Wisdom"
+            min="1"
+            max="20"
+            step="1"
+          />
+          <label for="Charisma">Charisma: </label>
+          <input
+            id="chaField"
+            type="number"
+            name="Charisma"
+            min="1"
+            max="20"
+            step="1"
+          />
+        </div>
+        <input type="submit" value="Add Character" />
+      </form>
+      <form id="characterForm" action="/getCharacters" method="get">
         <select id="methodSelect">
           <option value="get">GET</option>
           <option value="head">HEAD</option>
         </select>
-        <input type="submit" value="Get User" />
+        <input type="submit" value="Get Characters" />
       </form>
     </section>
     <section id="content"></section>
