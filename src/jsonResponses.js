@@ -1,6 +1,27 @@
 // Note this object is purely in memory
 const characters = {};
 
+const rollDice = (n, d) => {
+  const _rolls = [];
+  for (let i = 0; i < n; i++) {
+    const roll = Math.floor(Math.random() * d);
+    _rolls.push(roll);
+  }
+
+  const _sum = _rolls.reduce((a, b) => a + b, 0);
+
+  const results = { rolls: _rolls, sum: _sum };
+
+  return results;
+};
+
+const rollForAbilityScore = () => {
+  const results = rollDice(4, 6);
+  let { sum } = results;
+  sum -= Math.min(results.rolls);
+  return sum;
+};
+
 // Will respond with a json object string
 const respondJSON = (request, response, status, object) => {
   const headers = {
@@ -63,6 +84,8 @@ const addCharacter = (request, response, body) => {
 
   responseCode = 201;
 
+  console.log(rollForAbilityScore());
+
   if (characters[body.name]) {
     responseCode = 204;
   } else {
@@ -91,28 +114,6 @@ const notFound = (request, response) => {
 
 // Response only with head data of unknown enpoint
 const notFoundMeta = (request, response) => respondJSONMeta(request, response, 404);
-
-const rollDice = (n, d) => {
-  let _rolls = [];
-  for(let i = 0; i < n; i++){
-    let roll = Math.floor(Math.random() * d);
-    _rolls.push(roll);
-  }
-
-  const _sum = _rolls.reduce(function(a, b){return a + b;}, 0);
-
-  const results = {rolls: _rolls, sum: _sum};
-
-  return results;
-};
-
-const rollForAbilityScore = () => {
-  const results = rollDice(4, 6);
-  let sum = results.sum;
-  sum -= Math.min(results.rolls);
-  return parseInt(sum);
-};
-
 
 module.exports = {
   getCharacters,
