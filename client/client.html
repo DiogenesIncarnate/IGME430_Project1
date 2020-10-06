@@ -6,32 +6,49 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
     <script type="text/babel">
+      const rollDice = (n, d) => {
+        const _rolls = [];
+        for (let i = 0; i < n; i++) {
+          const roll = Math.floor(Math.random() * d);
+          _rolls.push(roll);
+        }
+
+        const _sum = _rolls.reduce((a, b) => a + b, 0);
+
+        const results = { rolls: _rolls, sum: _sum };
+
+        return results;
+      };
+
+      function rollForAbilityScore(){
+        const results = rollDice(4, 6);
+        let _sum = results.sum;
+        _sum -= Math.min(...results.rolls);
+        return _sum;
+      }
+
       // Take any JSON responses and parse them into legible HTML
       const parseJSON = (xhr, content) => {
-        
-        try{
+        try {
           const obj = JSON.parse(xhr.response);
-          if(obj) console.dir(obj);
+          if (obj) console.dir(obj);
 
-        if(obj.message){
-          content.innerHTML += `<p>${obj.message}</p>`;
-        }
-        if(obj.characters){
-          content.innerHTML += `<p>`;
-          content.innerHTML += `<h3>Characters:<h3><hr>`;
-          for(const ch in obj.characters){
-            //content.innerHTML += `Name: <i>${obj.characters[ch].name}</i>, Age: <i>${obj.characters[ch].age}</i><br>`;
-            for(const [key, value] of Object.entries(obj.characters[ch])){
-              content.innerHTML += `${key}: <i>${value}</i><b>|</b>`;
-            }
-            content.innerHTML += "<br>";
+          if (obj.message) {
+            content.innerHTML += `<p>${obj.message}</p>`;
           }
-          content.innerHTML += `</p>`;
-        }
-        } catch (e) {
-
-        }
-        
+          if (obj.characters) {
+            content.innerHTML += `<p>`;
+            content.innerHTML += `<h3>Characters:<h3><hr>`;
+            for (const ch in obj.characters) {
+              //content.innerHTML += `Name: <i>${obj.characters[ch].name}</i>, Age: <i>${obj.characters[ch].age}</i><br>`;
+              for (const [key, value] of Object.entries(obj.characters[ch])) {
+                content.innerHTML += `${key}: <i>${value}</i><b>|</b>`;
+              }
+              content.innerHTML += "<br>";
+            }
+            content.innerHTML += `</p>`;
+          }
+        } catch (e) {}
       };
 
       // Set the html response title based on the status code, then parse any JSON
@@ -68,7 +85,7 @@
         const method = chracterForm.querySelector("#methodSelect").value;
 
         const xhr = new XMLHttpRequest();
-        xhr.open(method, '/getCharacters');
+        xhr.open(method, "/getCharacters");
 
         xhr.setRequestHeader("Accept", "application/json");
 
@@ -106,6 +123,9 @@
 
         xhr.onload = () => handleResponse(xhr);
 
+        abilityFields.forEach(e => {
+          if(!e.value) e.value = rollForAbilityScore();
+        });
         let formData = `name=${nameField.value}&race=${raceField.value}&class=${classField.value}`;
         abilityFields.forEach((e) => (formData += `&${e.id}=${e.value}`));
 
