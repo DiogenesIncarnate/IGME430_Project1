@@ -3,30 +3,14 @@
   <head>
     <title>Our simple HTTP server</title>
     <link rel="stylesheet" type="text/css" href="/style.css" />
-
+    <link
+      href="https://getbootstrap.com/docs/4.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    <script src="../utilities.js"></script>
+    <script src="../sheet.js"></script>
     <script type="text/babel">
-      const rollDice = (n, d) => {
-        const _rolls = [];
-        for (let i = 0; i < n; i++) {
-          const roll = Math.floor(Math.random() * d);
-          _rolls.push(roll);
-        }
-
-        const _sum = _rolls.reduce((a, b) => a + b, 0);
-
-        const results = { rolls: _rolls, sum: _sum };
-
-        return results;
-      };
-
-      function rollForAbilityScore(){
-        const results = rollDice(4, 6);
-        let _sum = results.sum;
-        _sum -= Math.min(...results.rolls);
-        return _sum;
-      }
-
       // Take any JSON responses and parse them into legible HTML
       const parseJSON = (xhr, content) => {
         try {
@@ -103,7 +87,6 @@
         e.preventDefault();
 
         const dataAction = dataForm.getAttribute("action");
-        const dataMethod = dataForm.getAttribute("method");
 
         const nameField = dataForm.querySelector("#nameField");
         const raceField = dataForm.querySelector("#raceField");
@@ -113,7 +96,7 @@
         const abilityFields = abilitiesDiv.querySelectorAll("input");
 
         const xhr = new XMLHttpRequest();
-        xhr.open(dataMethod, dataAction);
+        xhr.open("GET", dataAction);
 
         xhr.setRequestHeader("Accept", "application/json");
         xhr.setRequestHeader(
@@ -123,9 +106,8 @@
 
         xhr.onload = () => handleResponse(xhr);
 
-        abilityFields.forEach(e => {
-          if(!e.value) e.value = rollForAbilityScore();
-        });
+        fillAbilityScores();
+
         let formData = `name=${nameField.value}&race=${raceField.value}&class=${classField.value}`;
         abilityFields.forEach((e) => (formData += `&${e.id}=${e.value}`));
 
@@ -138,12 +120,14 @@
       const init = () => {
         const dataForm = document.querySelector("#dataForm");
         const characterForm = document.querySelector("#characterForm");
+        const rollAbilitiesBtn = document.querySelector("#rollAbilitiesBtn");
 
         const addCharacter = (e) => sendPost(e, dataForm);
         const getCharacters = (e) => requestUpdate(e, characterForm);
 
         dataForm.addEventListener("submit", addCharacter);
         characterForm.addEventListener("submit", getCharacters);
+        rollAbilitiesBtn.addEventListener("click", fillAbilityScores);
       };
 
       window.onload = init;
@@ -182,7 +166,7 @@
           <option value="Warlock">Warlock</option>
           <option value="Wizard">Wizard</option>
         </select>
-        <div id="abilitiesDiv">
+        
           <label for="Strength">Strength: </label>
           <input
             id="strField"
@@ -233,21 +217,244 @@
             id="chaField"
             type="number"
             name="Charisma"
-            min="1"
-            max="20"
+            min="1" max="20"
             step="1"
           />
-        </div>
+        <label for="Alignment">Alignment: </label>
+        <select id="lawField">
+          <option value="Chaotic">Chaotic</option>
+          <option value="Neutral">Neutral</option>
+          <option value="Lawful">Lawful</option>
+        </select>
+        <select id="moralField">
+          <option value="Evil">Evil</option>
+          <option value="Neutral">Neutral</option>
+          <option value="Good">Good</option>
+        </select>
         <input type="submit" value="Add Character" />
       </form>
       <form id="characterForm" action="/getCharacters" method="get">
-        <select id="methodSelect">
-          <option value="get">GET</option>
-          <option value="head">HEAD</option>
-        </select>
         <input type="submit" value="Get Characters" />
       </form>
     </section>
     <section id="content"></section>
+    <section id="characterSheet">
+      <div class="container">
+  
+        <div class="row">
+        
+          <div class="col-4">
+            
+            <h2>Ability Scores</h2>
+            
+            <br>
+            
+            <div id="abilitiesDiv">
+            <table class="table">
+              <tr>
+                <th>Ability</th>
+                <th>Score</th>
+                <th>Mod</th>
+              </tr>
+              <tr>
+                <td>Strength</td>
+                <td><input class="ability" type="number" min="1" max="20" value="10" id="strScore"></td>
+                <td><input type="number" value="0" id="strMod"></td>
+              </tr>
+              <tr>
+                <td>Dexterity</td>
+                <td><input class="ability" type="number" min="1" max="20" value="10" id="dexScore"></td>
+                <td><input type="number" value="0" id="dexMod"></td>
+              </tr>
+              <tr>
+                <td>Constitution</td>
+                <td><input class="ability" type="number" min="1" max="20" value="10" id="conScore"></td>
+                <td><input type="number" value="0" id="conMod"></td>
+              </tr>
+              <tr>
+                <td>Intelligence</td>
+                <td><input class="ability" type="number" min="1" max="20" value="10" id="intScore"></td>
+                <td><input type="number" value="0" id="intMod"></td>
+              </tr>
+              <tr>
+                <td>Wisdom</td>
+                <td><input class="ability" type="number" min="1" max="20" value="10" id="wisScore"></td>
+                <td><input type="number" value="0" id="wisMod"></td>
+              </tr>
+              <tr>
+                <td>Charisma</td>
+                <td><input class="ability" type="number" min="1" max="20" value="10" id="chaScore"></td>
+                <td><input type="number" value="0" id="chaMod"></td>
+              </tr>
+            </table>
+            <button type="button" id="rollAbilitiesBtn">
+              Roll Ability Scores For Me
+            </button>
+          </div>
+            
+          </div>
+          
+          <div class="col-4">
+            
+            <h2>Player Level</h2>
+            
+            <br>
+            
+            <input type="number" id="playerLevel" min="1" max="20" value="1"">
+            
+            
+            <br><br>
+            
+            <h2>Armor</h2>
+            
+            <h6>Equipped Armor:</h6>
+            <select id="equippedArmor">
+              <option value="unarmored">None</option>
+              <optgroup id="lightArmor" value="Light Armor" label="Light Armor">
+              <option value="padded">Padded</option>
+              <option value="leather">Leather</option>
+              <option value="studded">Studded Leather</option>
+              </optgroup>
+              <optgroup id="mediumArmor" value="Medium Armor" label="Medium Armor">
+              <option value="hide">Hide</option>
+              <option value="chain">Chain Shirt</option>
+              <option value="scale">Scale Mail</option>
+              <option value="breastplate">Breastplate</option>
+              <option value="halfplate">Half Plate</option>
+              </optgroup>
+              <optgroup id="heavyArmor" value="Heavy Armor" label="Heavy Armor">
+              <option value="ringmail">Ring Mail</option>
+              <option  id="chainmailArmor"value="chainmail" disabled>Chain Mail</option>
+              <option id="splintArmor" value="splint" disabled>Splint</option>
+              <option id="plateArmor" value="plate" disabled>Plate</option>
+              </optgroup>
+            </select>
+            
+            <br><br>
+            <h6>Equipped Shield:</h6>
+            <select id="shieldEquip">
+              <option value="none">None</option>
+              <option value="shield">Shield</option>
+            </select>
+            <br><br>
+            
+            <h6>AC:</h6><input type="number" id="armorClass" placeholder="0">
+            
+            
+          </div>
+          
+          <div class="col-4">
+            
+            <h2>Proficiency Bonus</h2>
+            
+            <br>
+            
+            <input type="number" id="profBonus" value="2">
+            
+            <br><br>
+            
+            <h2>Skills</h2>
+            
+            <table class="table">
+              
+              <tr>
+                <td><input type="checkbox" id="acroProf"></td>
+                <td>Acrobatics:</td>
+                <td><input type="number" id="acroScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="animProf"></td>
+                <td>Animal Handling:</td>
+                <td><input type="number" id="animScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="arcaProf"></td>
+                <td>Arcana:</td>
+                <td><input type="number" id="arcaScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="athlProf"></td>
+                <td>Athetics:</td>
+                <td><input type="number" id="athlScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="decProf"></td>
+                <td>Deception:</td>
+                <td><input type="number" id="decScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="hisProf"></td>
+                <td>History:</td>
+                <td><input type="number" id="hisScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="insProf"></td>
+                <td>Insight:</td>
+                <td><input type="number" id="insScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="intiProf"></td>
+                <td>Intimidation:</td>
+                <td><input type="number" id="intiScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="invProf"></td>
+                <td>Investigation:</td>
+                <td><input type="number" id="invScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="medProf"></td>
+                <td>Medicine:</td>
+                <td><input type="number" id="medScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="natProf"></td>
+                <td>Nature:</td>
+                <td><input type="number" id="natScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="percProf"></td>
+                <td>Perception:</td>
+                <td><input type="number" id="percScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="perfProf"></td>
+                <td>Performance:</td>
+                <td><input type="number" id="perfScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="persProf"></td>
+                <td>Persuasion:</td>
+                <td><input type="number" id="persScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="relProf"></td>
+                <td>Religion:</td>
+                <td><input type="number" id="relScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="sleiProf"></td>
+                <td>Sleight of Hand:</td>
+                <td><input type="number" id="sleiScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="steProf"></td>
+                <td>Stealth:</td>
+                <td><input type="number" id="steScore"></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" id="survProf"></td>
+                <td>Survival:</td>
+                <td><input type="number" id="survScore"></td>
+              </tr>
+              
+            </table>
+            
+          </div>
+        
+        </div>
+        
+      </div>
+    </section>
   </body>
 </html>

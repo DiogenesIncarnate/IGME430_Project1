@@ -19,3 +19,7 @@ html, body {
   font-size: 2em;
   text-align: center;
 }
+
+.table input[type=number] {
+  width: 100%;
+}
