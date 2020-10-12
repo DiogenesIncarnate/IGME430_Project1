@@ -1,39 +1,18 @@
-function fillAbilityScores() {
-    const abilitiesDiv = document.querySelector("#abilitiesDiv");
-    const abilityFields = document.querySelectorAll(".ability");
-
-    abilityFields.forEach((e) => {
-      e.value = rollForAbilityScore();
-    });
-  }
-
-  function updateModifiers() {
+function updateModifiers() {
     // convert ability scores into modifiers
 
     const strScore = document.getElementById("strScore").value;
-    document.getElementById("strMod").value = Math.floor(
-      (strScore - 10) / 2
-    );
+    document.getElementById("strMod").value = Math.floor((strScore - 10) / 2);
     const dexScore = document.getElementById("dexScore").value;
-    document.getElementById("dexMod").value = Math.floor(
-      (dexScore - 10) / 2
-    );
+    document.getElementById("dexMod").value = Math.floor((dexScore - 10) / 2);
     const conScore = document.getElementById("conScore").value;
-    document.getElementById("conMod").value = Math.floor(
-      (conScore - 10) / 2
-    );
+    document.getElementById("conMod").value = Math.floor((conScore - 10) / 2);
     const intScore = document.getElementById("intScore").value;
-    document.getElementById("intMod").value = Math.floor(
-      (intScore - 10) / 2
-    );
+    document.getElementById("intMod").value = Math.floor((intScore - 10) / 2);
     const wisScore = document.getElementById("wisScore").value;
-    document.getElementById("wisMod").value = Math.floor(
-      (wisScore - 10) / 2
-    );
+    document.getElementById("wisMod").value = Math.floor((wisScore - 10) / 2);
     const chaScore = document.getElementById("chaScore").value;
-    document.getElementById("chaMod").value = Math.floor(
-      (chaScore - 10) / 2
-    );
+    document.getElementById("chaMod").value = Math.floor((chaScore - 10) / 2);
 
     setSkills();
     enableArmor();

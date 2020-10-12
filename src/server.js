@@ -4,7 +4,7 @@ const query = require('querystring');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
 
-const port = process.env.PORT || process.env.NODE_PORT || 3000;
+const port = process.env.PORT || process.env.NODE_PORT || 3005;
 
 // Filter data to the body collection in chunks
 // When the end of the data is reached, add each user through the jsonHandler
@@ -26,6 +26,7 @@ const handlePost = (request, response, parsedUrl) => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
 
+      console.log(bodyString);
       console.log(bodyParams);
 
       jsonHandler.addCharacter(request, response, bodyParams);
