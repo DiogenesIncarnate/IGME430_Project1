@@ -34,17 +34,6 @@ const getCharacters = (request, response) => {
 // Will only request head of users data
 const getCharactersMeta = (request, response) => respondJSONMeta(request, response, 200);
 
-// Will update existing user with 201 status
-const updateCharacter = (request, response) => {
-  const newCharacter = {
-    createdAt: Date.now(),
-  };
-
-  characters[newCharacter.createdAt] = newCharacter;
-
-  return respondJSON(request, response, 201, newCharacter);
-};
-
 // Will add an entirely new user
 // with 201 status, or 204 if the user already exists,
 // or 400 if parameters are missing
@@ -55,21 +44,31 @@ const addCharacter = (request, response, body) => {
 
   let responseCode = 201;
 
-  if (!body.name || !body.race || !body.class) {
-    console.dir(`${body.name}, ${body.race}, ${body.class}`);
-    responseJSON.id = 'missingParams';
+  console.dir(body);
+  let isMissingParams = false;
+  for (let i = 0; i < Object.entries(body).length; i++) {
+    if (Object.entries(body)[i] == null) {
+      console.dir(`${Object.entries(body)[i]}`);
+      isMissingParams = true;
+      responseJSON.id = 'missingParams';
+    }
+  }
+
+  if (isMissingParams) {
     return respondJSON(request, response, 400, responseJSON);
   }
 
   responseCode = 201;
 
-  if (characters[body.name]) {
+  if (characters[body.UID]) {
     responseCode = 204;
   } else {
-    characters[body.name] = {};
+    characters[body.UID] = {};
+    characters[body.UID].UID = body.UID;
   }
 
-  characters[body.name] = body;
+  console.dir(body);
+  Object.entries(body).forEach(([key, value]) => { characters[body.UID][key] = value; });
 
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully.';
@@ -96,7 +95,6 @@ module.exports = {
   getCharacters,
   getCharactersMeta,
   addCharacter,
-  updateCharacter,
   notFound,
   notFoundMeta,
 };

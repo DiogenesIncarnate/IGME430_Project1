@@ -1,0 +1,18 @@
+- Purpose:
+The purpose of this app is to help your average or new Dungeons and Dragons player to layout the very basics of their character sheet, as well as view the responsive statistics to better understand how all the pieces of the puzzle of building a character sheet fit together.
+
+- What part of the app does my API handle?
+My API handles the delivery of the core data of the character sheet and efficiently displays critical information without getting jumbled up in confusing calculations that the user might have to deal with.
+
+- Went right/wrong?
+I think that the responsiveness of the data within the app as well as the organization went well. My major mistakes or shortcomings would likely be the scope of the project, because there is room to go into much more depth.
+
+- How would I improve?
+I would make my saving and cataloguing function much more usable, as well as adding greater depth of functionality, customization, and artistry in the users design of the character as well as the general user interface.
+
+Above and Beyond:
+I took the effort to add in the basic traits, proficiencies, and languages that come with each base race and class and have them responsively update for the player as they edit the character sheet in a concise manner.
+I also, with the help of some code resources, made certain parts of the character sheet entirely responsive to the other pieces of data, such as Armor Class and stat modifiers.
+
+Code References:
+	- (Midnight Hatter) [https://www.youtube.com/channel/UCBLHNlA2Xoyrw842jQBzJrA], [https://codepen.io/midnighthatter/pen/QWwjJpV]

@@ -26,7 +26,6 @@ const handlePost = (request, response, parsedUrl) => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
 
-      console.log(bodyString);
       console.log(bodyParams);
 
       jsonHandler.addCharacter(request, response, bodyParams);
@@ -38,6 +37,12 @@ const handlePost = (request, response, parsedUrl) => {
 const handleGet = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
+  } else if (parsedUrl.pathname === '/main.js') {
+    htmlHandler.getMain(request, response);
+  } else if (parsedUrl.pathname === '/sheet.js') {
+    htmlHandler.getSheet(request, response);
+  } else if (parsedUrl.pathname === '/utilities.js') {
+    htmlHandler.getUtils(request, response);
   } else if (parsedUrl.pathname === '/getCharacters') {
     jsonHandler.getCharacters(request, response);
   } else if (parsedUrl.pathname === '/') {

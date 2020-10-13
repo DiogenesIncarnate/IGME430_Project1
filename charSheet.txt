@@ -1,0 +1,211 @@
+<div class="container">
+  
+  <div class="row">
+  
+    <div class="col-4">
+      
+      <h2>Ability Scores</h2>
+      
+      <br>
+      
+      <table class="table">
+        <tr>
+          <th>Ability</th>
+          <th>Score</th>
+          <th>Mod</th>
+        </tr>
+        <tr>
+          <td>Strength</td>
+          <td><input type="number" value="10" id="strScore" onchange="updateModifiers()"></td>
+          <td><input type="number" value="0" id="strMod"></td>
+        </tr>
+        <tr>
+          <td>Dexterity</td>
+          <td><input type="number" value="10" id="dexScore" onchange="updateModifiers()"></td>
+          <td><input type="number" value="0" id="dexMod"></td>
+        </tr>
+        <tr>
+          <td>Constitution</td>
+          <td><input type="number" value="10" id="conScore" onchange="updateModifiers()"></td>
+          <td><input type="number" value="0" id="conMod"></td>
+        </tr>
+        <tr>
+          <td>Intelligence</td>
+          <td><input type="number" value="10" id="intScore" onchange="updateModifiers()"></td>
+          <td><input type="number" value="0" id="intMod"></td>
+        </tr>
+        <tr>
+          <td>Wisdom</td>
+          <td><input type="number" value="10" id="wisScore" onchange="updateModifiers()"></td>
+          <td><input type="number" value="0" id="wisMod"></td>
+        </tr>
+        <tr>
+          <td>Charisma</td>
+          <td><input type="number" value="10" id="chaScore" onchange="updateModifiers()"></td>
+          <td><input type="number" value="0" id="chaMod"></td>
+        </tr>
+      </table>
+      
+    </div>
+    
+    <div class="col-4">
+      
+      <h2>Player Level</h2>
+      
+      <br>
+      
+      <input type="number" id="playerLevel" min="1" max="20" value="1" onchange="playerLevelChange();">
+      
+      
+      <br><br>
+      
+      <h2>Armor</h2>
+      
+      <h6>Equipped Armor:</h6>
+      <select id="equippedArmor" onchange="equipArmor(this);">
+        <option value="unarmored">None</option>
+        <optgroup id="lightArmor" value="Light Armor" label="Light Armor">
+        <option value="padded">Padded</option>
+        <option value="leather">Leather</option>
+        <option value="studded">Studded Leather</option>
+        </optgroup>
+        <optgroup id="mediumArmor" value="Medium Armor" label="Medium Armor">
+        <option value="hide">Hide</option>
+        <option value="chain">Chain Shirt</option>
+        <option value="scale">Scale Mail</option>
+        <option value="breastplate">Breastplate</option>
+        <option value="halfplate">Half Plate</option>
+        </optgroup>
+        <optgroup id="heavyArmor" value="Heavy Armor" label="Heavy Armor">
+        <option value="ringmail">Ring Mail</option>
+        <option  id="chainmailArmor"value="chainmail" disabled>Chain Mail</option>
+        <option id="splintArmor" value="splint" disabled>Splint</option>
+        <option id="plateArmor" value="plate" disabled>Plate</option>
+        </optgroup>
+      </select>
+      
+      <br><br>
+      <h6>Equipped Shield:</h6>
+      <select id="shieldEquip" onchange="shieldEquip(this);">
+        <option value="none">None</option>
+        <option value="shield">Shield</option>
+      </select>
+      <br><br>
+      
+      <h6>AC:</h6><input type="number" id="armorClass" placeholder="0">
+      
+      
+    </div>
+    
+    <div class="col-4">
+      
+      <h2>Proficiency Bonus</h2>
+      
+      <br>
+      
+      <input type="number" id="profBonus" value="2">
+      
+      <br><br>
+      
+      <h2>Skills</h2>
+      
+      <table class="table">
+        
+        <tr>
+          <td><input type="checkbox" id="acroProf" onchange="setSkills();"></td>
+          <td>Acrobatics:</td>
+          <td><input type="number" id="acroScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="animProf" onchange="setSkills();"></td>
+          <td>Animal Handling:</td>
+          <td><input type="number" id="animScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="arcaProf" onchange="setSkills();"></td>
+          <td>Arcana:</td>
+          <td><input type="number" id="arcaScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="athlProf" onchange="setSkills();"></td>
+          <td>Athetics:</td>
+          <td><input type="number" id="athlScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="decProf" onchange="setSkills();"></td>
+          <td>Deception:</td>
+          <td><input type="number" id="decScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="hisProf" onchange="setSkills();"></td>
+          <td>History:</td>
+          <td><input type="number" id="hisScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="insProf" onchange="setSkills();"></td>
+          <td>Insight:</td>
+          <td><input type="number" id="insScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="intiProf" onchange="setSkills();"></td>
+          <td>Intimidation:</td>
+          <td><input type="number" id="intiScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="invProf" onchange="setSkills();"></td>
+          <td>Investigation:</td>
+          <td><input type="number" id="invScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="medProf" onchange="setSkills();"></td>
+          <td>Medicine:</td>
+          <td><input type="number" id="medScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="natProf" onchange="setSkills();"></td>
+          <td>Nature:</td>
+          <td><input type="number" id="natScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="percProf" onchange="setSkills();"></td>
+          <td>Perception:</td>
+          <td><input type="number" id="percScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="perfProf" onchange="setSkills();"></td>
+          <td>Performance:</td>
+          <td><input type="number" id="perfScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="persProf" onchange="setSkills();"></td>
+          <td>Persuasion:</td>
+          <td><input type="number" id="persScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="relProf" onchange="setSkills();"></td>
+          <td>Religion:</td>
+          <td><input type="number" id="relScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="sleiProf" onchange="setSkills();"></td>
+          <td>Sleight of Hand:</td>
+          <td><input type="number" id="sleiScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="steProf" onchange="setSkills();"></td>
+          <td>Stealth:</td>
+          <td><input type="number" id="steScore"></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" id="survProf" onchange="setSkills();"></td>
+          <td>Survival:</td>
+          <td><input type="number" id="survScore"></td>
+        </tr>
+        
+      </table>
+      
+    </div>
+  
+  </div>
+  
+</div>
